@@ -1,113 +1,202 @@
+import { User, Category, Topic, Post } from '../types';
 
-import type { User, Category, Topic, Post } from '../types';
-
-// Mock Data
-const USERS: User[] = [
-  { id: 'user-1', username: 'react_guru', name: 'Alice', avatarUrl: `https://i.pravatar.cc/150?u=user-1`, joinedAt: '2023-01-15T10:00:00Z', isAdmin: true },
-  { id: 'user-2', username: 'tailwind_fan', name: 'Bob', avatarUrl: `https://i.pravatar.cc/150?u=user-2`, joinedAt: '2023-02-20T14:30:00Z' },
-  { id: 'user-3', username: 'node_ninja', name: 'Charlie', avatarUrl: `https://i.pravatar.cc/150?u=user-3`, joinedAt: '2023-03-10T09:00:00Z' },
-];
-
-const CATEGORIES: Category[] = [
-  { id: 'cat-1', name: 'React', description: 'Discussions about the React library and its ecosystem.', color: '61DAFB' },
-  { id: 'cat-2', name: 'Tailwind CSS', description: 'Tips, tricks, and showcases for Tailwind CSS.', color: '38B2AC' },
-  { id: 'cat-3', name: 'General Discussion', description: 'Talk about anything and everything web dev.', color: 'F6E05E' },
-];
-
-let TOPICS: Topic[] = [
-  { id: 'topic-1', title: 'What are React Server Components?', author: USERS[0], category: CATEGORIES[0], createdAt: '2023-10-26T10:00:00Z', lastPostedAt: '2023-10-26T12:30:00Z', replyCount: 1, viewCount: 150 },
-  { id: 'topic-2', title: 'Best way to handle forms in 2024?', author: USERS[0], category: CATEGORIES[0], createdAt: '2023-10-25T14:00:00Z', lastPostedAt: '2023-10-25T18:45:00Z', replyCount: 1, viewCount: 250 },
-  { id: 'topic-3', title: 'Show off your latest Tailwind project!', author: USERS[1], category: CATEGORIES[1], createdAt: '2023-10-24T09:00:00Z', lastPostedAt: '2023-10-24T15:20:00Z', replyCount: 1, viewCount: 500 },
-  { id: 'topic-4', title: 'Is HTMX the future?', author: USERS[2], category: CATEGORIES[2], createdAt: '2023-10-26T11:00:00Z', lastPostedAt: '2023-10-26T11:00:00Z', replyCount: 0, viewCount: 80 },
-];
-
-let POSTS: Post[] = [
-  { id: 'post-1', topicId: 'topic-1', content: 'This is the first post about RSCs. They seem interesting but also complex.', author: USERS[0], createdAt: '2023-10-26T10:00:00Z', likes: 10, topicTitle: TOPICS[0].title },
-  { id: 'post-2', topicId: 'topic-1', content: 'I agree! The learning curve might be steep.', author: USERS[1], createdAt: '2023-10-26T12:30:00Z', likes: 5, topicTitle: TOPICS[0].title },
-  { id: 'post-3', topicId: 'topic-2', content: "I'm a big fan of React Hook Form combined with Zod for validation. It's a powerful combo.", author: USERS[0], createdAt: '2023-10-25T14:00:00Z', likes: 25, topicTitle: TOPICS[1].title },
-  { id: 'post-4', topicId: 'topic-2', content: "I've been using Formik for years and it's still great.", author: USERS[2], createdAt: '2023-10-25T18:45:00Z', likes: 8, topicTitle: TOPICS[1].title },
-  { id: 'post-5', topicId: 'topic-3', content: "Just launched my new portfolio site using Tailwind and Next.js! Check it out.", author: USERS[1], createdAt: '2023-10-24T09:00:00Z', likes: 50, topicTitle: TOPICS[2].title },
-  { id: 'post-6', topicId: 'topic-3', content: "Wow, that looks amazing! The animations are so smooth.", author: USERS[0], createdAt: '2023-10-24T15:20:00Z', likes: 12, topicTitle: TOPICS[2].title },
-];
-
-
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-
-export const fetchCategories = async (): Promise<Category[]> => {
-  await delay(300);
-  return [...CATEGORIES];
+// --- MOCK DATABASE ---
+let db = {
+  users: [
+    { id: '124562', username: 'react_guru', name: 'Alice', avatarUrl: 'https://i.pravatar.cc/150?u=react_guru', joinedAt: '2023-01-15T10:00:00Z', isAdmin: true },
+    { id: '145698', username: 'tailwind_fan', name: 'Bob', avatarUrl: 'https://i.pravatar.cc/150?u=tailwind_fan', joinedAt: '2023-02-20T14:30:00Z', isAdmin: false },
+    { id: '789012', username: 'gemini_user', name: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=gemini_user', joinedAt: '2023-03-10T09:00:00Z', isAdmin: false },
+  ],
+  categories: [
+    { id: 'c1', name: 'React', description: 'Discussions about the React library and its ecosystem.', color: '61DAFB' },
+    { id: 'c2', name: 'Tailwind CSS', description: 'Everything related to the utility-first CSS framework.', color: '38B2AC' },
+    { id: 'c3', name: 'General', description: 'Off-topic conversations.', color: '9CA3AF' },
+  ],
+  topics: [
+    { id: 't1', title: 'React Server Components: A Game Changer?', authorId: '124562', categoryId: 'c1', createdAt: '2023-10-26T10:00:00Z' },
+    { id: 't2', title: 'Best Practices for Responsive Design with Tailwind', authorId: '145698', categoryId: 'c2', createdAt: '2023-10-25T15:30:00Z' },
+    { id: 't3', title: 'What is everyone working on?', authorId: '789012', categoryId: 'c3', createdAt: '2023-10-24T12:00:00Z' },
+  ],
+  posts: [
+    { id: 'p1', topicId: 't1', authorId: '124562', content: "I've been exploring React Server Components lately and they seem incredibly powerful. The ability to fetch data on the server and render components without shipping JS to the client is amazing for performance. What are your thoughts?", createdAt: '2023-10-26T10:00:00Z', likes: 15 },
+    { id: 'p2', topicId: 't1', authorId: '145698', content: "Totally agree! It simplifies data fetching logic a lot. I'm a bit concerned about the learning curve for teams used to the traditional CSR/SPA model though.", createdAt: '2023-10-26T11:20:00Z', likes: 8 },
+    { id: 'p3', topicId: 't2', authorId: '145698', content: "Hey everyone, I wanted to start a discussion on Tailwind best practices. I find using `@apply` can get messy. I prefer creating custom components with variants using libraries like CVA. How do you all approach it?", createdAt: '2023-10-25T15:30:00Z', likes: 22 },
+    { id: 'p4', topicId: 't3', authorId: '789012', content: "Just kicking off a general thread. I'm currently building a forum application (meta, I know!) with React, TypeScript, and Tailwind. It's been a fun project to learn more about state management.", createdAt: '2023-10-24T12:00:00Z', likes: 10 },
+    { id: 'p5', topicId: 't1', authorId: '789012', content: "It feels like a step back towards PHP/Rails-style rendering, but with the component model of React. I'm excited to see how the ecosystem adapts.", createdAt: '2023-10-26T14:00:00Z', likes: 5 },
+  ]
 };
 
-export const fetchTopics = async (categoryId?: string): Promise<Topic[]> => {
-  await delay(500);
-  const topicsWithCounts = TOPICS.map(topic => ({
-    ...topic,
-    replyCount: POSTS.filter(p => p.topicId === topic.id).length - 1
-  })).sort((a, b) => new Date(b.lastPostedAt).getTime() - new Date(a.lastPostedAt).getTime());
-  if (!categoryId) {
-    return topicsWithCounts;
-  }
-  return topicsWithCounts.filter(topic => topic.category.id === categoryId);
+const SIMULATED_DELAY = 500;
+
+const simulateApi = <T,>(data: T): Promise<T> => {
+    return new Promise(resolve => setTimeout(() => resolve(JSON.parse(JSON.stringify(data))), SIMULATED_DELAY));
 };
 
-export const fetchPosts = async (): Promise<Post[]> => {
-    await delay(200);
-    return [...POSTS];
-}
-
-export const fetchPostsForTopic = async (topicId: string): Promise<Post[]> => {
-  await delay(400);
-  return POSTS.filter(post => post.topicId === topicId).sort((a,b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+const enrichTopic = (topic: any): Topic => {
+    const posts = db.posts.filter(p => p.topicId === topic.id);
+    return {
+        ...topic,
+        author: db.users.find(u => u.id === topic.authorId)!,
+        category: db.categories.find(c => c.id === topic.categoryId)!,
+        replyCount: posts.length > 0 ? posts.length - 1 : 0,
+        viewCount: Math.floor(Math.random() * 2000) + posts.length,
+        lastPostedAt: posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]?.createdAt || topic.createdAt,
+    };
 };
 
-export const fetchUserById = async (userId: string): Promise<User | undefined> => {
-  await delay(200);
-  return USERS.find(user => user.id === userId);
+const enrichPost = (post: any): Post => {
+    const topic = db.topics.find(t => t.id === post.topicId)!;
+    return {
+        ...post,
+        author: db.users.find(u => u.id === post.authorId)!,
+        topicTitle: topic.title,
+    };
 };
 
-export const fetchTopicsByUser = async (userId: string): Promise<Topic[]> => {
-  await delay(400);
-  return TOPICS.filter(topic => topic.author.id === userId).sort((a,b) => new Date(b.lastPostedAt).getTime() - new Date(a.lastPostedAt).getTime());
+export const fetchAllCategories = (): Promise<Category[]> => simulateApi(db.categories);
+export const fetchAllUsers = (): Promise<User[]> => simulateApi(db.users);
+export const fetchAllTopics = (): Promise<Topic[]> => simulateApi(db.topics.map(enrichTopic).sort((a,b) => new Date(b.lastPostedAt).getTime() - new Date(a.lastPostedAt).getTime()));
+export const fetchAllPosts = (): Promise<Post[]> => simulateApi(db.posts.map(enrichPost));
+
+export const fetchTopics = (categoryId?: string): Promise<Topic[]> => {
+  let topics = categoryId ? db.topics.filter(t => t.categoryId === categoryId) : [...db.topics];
+  const enrichedTopics = topics.map(enrichTopic);
+  return simulateApi(enrichedTopics.sort((a, b) => new Date(b.lastPostedAt).getTime() - new Date(a.lastPostedAt).getTime()));
 };
 
-export const fetchPostsByUser = async (userId: string): Promise<Post[]> => {
-  await delay(400);
-  return POSTS
-    .filter(post => post.author.id === userId)
-    .sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .map(p => ({...p, topicTitle: TOPICS.find(t => t.id === p.topicId)?.title}));
+export const fetchPostsForTopic = (topicId: string): Promise<Post[]> => {
+  const posts = db.posts.filter(p => p.topicId === topicId);
+  const enrichedPosts = posts.map(enrichPost);
+  return simulateApi(enrichedPosts.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
 };
 
-export const createPost = async (topicId: string, content: string, author: User): Promise<Post> => {
-  await delay(600);
-  const topic = TOPICS.find(t => t.id === topicId);
-  if (!topic) throw new Error("Topic not found");
-  
-  const newPost: Post = {
-    id: `post-${Date.now()}`,
+export const createPost = (topicId: string, content: string, author: User): Promise<Post> => {
+  const newPost = {
+    id: `p${db.posts.length + 1}`,
     topicId,
+    authorId: author.id,
     content,
-    author,
     createdAt: new Date().toISOString(),
     likes: 0,
-    topicTitle: topic.title,
   };
-  POSTS.push(newPost);
-  
-  // Update topic lastPostedAt
-  const topicIndex = TOPICS.findIndex(t => t.id === topicId);
-  if (topicIndex !== -1) {
-    TOPICS[topicIndex] = { ...TOPICS[topicIndex], lastPostedAt: newPost.createdAt };
-  }
-  
-  return newPost;
+  db.posts.push(newPost);
+  return simulateApi(enrichPost(newPost));
 };
 
-export const login = async (username: string): Promise<User> => {
-    await delay(500);
-    const user = USERS.find(u => u.username.toLowerCase() === username.toLowerCase());
-    if (user) {
-        return user;
-    }
-    throw new Error('User not found');
+export const createTopic = (title: string, content: string, categoryId: string, author: User): Promise<Topic> => {
+    const newTopic = {
+        id: `t${db.topics.length + 1}`,
+        title,
+        authorId: author.id,
+        categoryId,
+        createdAt: new Date().toISOString(),
+    };
+    db.topics.push(newTopic);
+    createPost(newTopic.id, content, author);
+    return simulateApi(enrichTopic(newTopic));
 }
+
+export const login = (username: string): Promise<User> => {
+  const user = db.users.find(u => u.username.toLowerCase() === username.toLowerCase());
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (user) {
+        resolve(JSON.parse(JSON.stringify(user)));
+      } else {
+        reject(new Error("User not found"));
+      }
+    }, SIMULATED_DELAY);
+  });
+};
+
+export const fetchUserById = (userId: string): Promise<User | undefined> => {
+    return simulateApi(db.users.find(u => u.id === userId));
+}
+
+export const fetchTopicsByUser = (userId: string): Promise<Topic[]> => {
+    const topics = db.topics.filter(t => t.authorId === userId);
+    return simulateApi(topics.map(enrichTopic).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+}
+
+export const fetchPostsByUser = (userId: string): Promise<Post[]> => {
+    const posts = db.posts.filter(p => p.authorId === userId && db.topics.find(t => t.id === p.topicId)?.authorId !== userId);
+    return simulateApi(posts.map(enrichPost).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+}
+
+
+// --- ADMIN FUNCTIONS ---
+export const adminDeleteUser = (userId: string): Promise<void> => {
+    const user = db.users.find(u => u.id === userId);
+    if (user?.isAdmin) {
+        return Promise.reject(new Error("Cannot delete an admin user."));
+    }
+    db.users = db.users.filter(u => u.id !== userId);
+    // In a real app, you'd handle re-assigning or deleting user content
+    return simulateApi(undefined);
+}
+
+export const adminToggleAdminStatus = (userId: string): Promise<void> => {
+    const user = db.users.find(u => u.id === userId);
+    if (!user) {
+        return Promise.reject(new Error("User not found."));
+    }
+    if (user.id === '124562') { // Prevent demoting the main admin
+        return Promise.reject(new Error("Cannot change status for the main admin."));
+    }
+    user.isAdmin = !user.isAdmin;
+    return simulateApi(undefined);
+}
+
+export const adminDeleteTopic = (topicId: string): Promise<void> => {
+    db.topics = db.topics.filter(t => t.id !== topicId);
+    db.posts = db.posts.filter(p => p.topicId !== topicId);
+    return simulateApi(undefined);
+}
+
+export const adminDeleteCategory = (categoryId: string): Promise<void> => {
+    const topicsInCategory = db.topics.filter(t => t.categoryId === categoryId);
+    if (topicsInCategory.length > 0) {
+        return Promise.reject(new Error("Cannot delete category with existing topics. Please reassign or delete them first."));
+    }
+    db.categories = db.categories.filter(c => c.id !== categoryId);
+    return simulateApi(undefined);
+}
+
+export const adminCreateCategory = (name: string, description: string, color: string): Promise<Category> => {
+    const newCategory: Category = {
+        id: `c${db.categories.length + 1 + Math.random()}`,
+        name,
+        description,
+        color: color.replace('#', ''),
+    };
+    db.categories.push(newCategory);
+    return simulateApi(newCategory);
+}
+
+export const adminEditCategory = (categoryId: string, data: { name: string; description: string; color: string; }): Promise<Category> => {
+    const category = db.categories.find(c => c.id === categoryId);
+    if (!category) {
+        return Promise.reject(new Error("Category not found."));
+    }
+    category.name = data.name;
+    category.description = data.description;
+    category.color = data.color.replace('#', '');
+    return simulateApi(category);
+}
+
+export const adminCreateTopic = (title: string, content: string, authorId: string, categoryId: string): Promise<Topic> => {
+    const author = db.users.find(u => u.id === authorId);
+    if (!author) {
+        return Promise.reject(new Error("Author not found"));
+    }
+    const newTopic = {
+        id: `t${db.topics.length + 1 + Math.random()}`,
+        title,
+        authorId,
+        categoryId,
+        createdAt: new Date().toISOString(),
+    };
+    db.topics.push(newTopic);
+    createPost(newTopic.id, content, author);
+    return simulateApi(enrichTopic(newTopic));
+};

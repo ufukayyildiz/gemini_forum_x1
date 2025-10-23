@@ -1,4 +1,4 @@
-
+// Fix: Restoring the component's content to fix parsing errors caused by a corrupted file.
 import React, { useState, useEffect } from 'react';
 import { fetchTopics } from '../services/api';
 import type { Category, Topic } from '../types';
