@@ -2,39 +2,36 @@
 export interface User {
   id: string;
   username: string;
-  avatarUrl: string;
   name: string;
+  avatarUrl: string;
   joinedAt: string;
+  isAdmin?: boolean;
 }
 
 export interface Category {
-  id: number;
-  name:string;
-  slug: string;
-  color: string;
+  id: string;
+  name: string;
   description: string;
-}
-
-export interface Post {
-  id: number;
-  author: User;
-  content: string; // Markdown content
-  createdAt: string; // ISO 8601 date string
-  likes: number;
-  replyToPostNumber: number | null;
-  postNumber: number;
-  topicTitle?: string; // For replies list in profile
-  topicId?: number; // For replies list in profile
+  color: string;
 }
 
 export interface Topic {
-  id: number;
+  id: string;
   title: string;
   author: User;
   category: Category;
-  createdAt: string; // ISO 8601 date string
-  lastPostedAt: string; // ISO 8601 date string
+  createdAt: string;
+  lastPostedAt: string;
   replyCount: number;
   viewCount: number;
-  posts: Post[]; // Typically only the first post is included in list view.
+}
+
+export interface Post {
+  id: string;
+  content: string;
+  author: User;
+  createdAt: string;
+  likes: number;
+  topicId: string;
+  topicTitle?: string;
 }

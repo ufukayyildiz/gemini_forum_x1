@@ -1,204 +1,113 @@
 
-import type { Category, Post, Topic, User } from '../types';
+import type { User, Category, Topic, Post } from '../types';
 
-const generateRandomId = () => Math.floor(100000 + Math.random() * 900000).toString();
-
-// MOCK DATA - This simulates a PostgreSQL database.
-const users: User[] = [
-  { id: generateRandomId(), username: 'react_guru', name: 'Alice', avatarUrl: 'https://i.pravatar.cc/150?u=1', joinedAt: '2023-01-15T10:00:00Z' },
-  { id: generateRandomId(), username: 'tailwind_fan', name: 'Bob', avatarUrl: 'https://i.pravatar.cc/150?u=2', joinedAt: '2023-02-20T11:30:00Z' },
-  { id: generateRandomId(), username: 'ts_master', name: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=3', joinedAt: '2023-03-05T14:00:00Z' },
-  { id: generateRandomId(), username: 'ux_designer', name: 'Diana', avatarUrl: 'https://i.pravatar.cc/150?u=4', joinedAt: '2023-04-10T18:45:00Z' },
+// Mock Data
+const USERS: User[] = [
+  { id: 'user-1', username: 'react_guru', name: 'Alice', avatarUrl: `https://i.pravatar.cc/150?u=user-1`, joinedAt: '2023-01-15T10:00:00Z', isAdmin: true },
+  { id: 'user-2', username: 'tailwind_fan', name: 'Bob', avatarUrl: `https://i.pravatar.cc/150?u=user-2`, joinedAt: '2023-02-20T14:30:00Z' },
+  { id: 'user-3', username: 'node_ninja', name: 'Charlie', avatarUrl: `https://i.pravatar.cc/150?u=user-3`, joinedAt: '2023-03-10T09:00:00Z' },
 ];
 
-const categories: Category[] = [
-  { id: 1, name: 'React', slug: 'react', color: '61DAFB', description: 'Discussions about the React library.' },
-  { id: 2, name: 'Tailwind CSS', slug: 'tailwind-css', color: '38B2AC', description: 'Styling with Tailwind CSS.' },
-  { id: 3, name: 'General', slug: 'general', color: 'F6E05E', description: 'Off-topic and general chat.' },
-  { id: 4, name: 'TypeScript', slug: 'typescript', color: '3178C6', description: 'All about TypeScript.' },
+const CATEGORIES: Category[] = [
+  { id: 'cat-1', name: 'React', description: 'Discussions about the React library and its ecosystem.', color: '61DAFB' },
+  { id: 'cat-2', name: 'Tailwind CSS', description: 'Tips, tricks, and showcases for Tailwind CSS.', color: '38B2AC' },
+  { id: 'cat-3', name: 'General Discussion', description: 'Talk about anything and everything web dev.', color: 'F6E05E' },
 ];
 
-const topics: Topic[] = [
-  {
-    id: 1,
-    title: 'Getting Started with React Hooks',
-    author: users[0],
-    category: categories[0],
-    createdAt: '2023-10-26T10:00:00Z',
-    lastPostedAt: '2023-10-27T12:30:00Z',
-    replyCount: 5,
-    viewCount: 152,
-    posts: [
-      { id: 1, author: users[0], content: 'Hey everyone, I\'m new to React Hooks. What are the best resources to get started? I\'ve read the official docs, but looking for more practical examples.\n\n`useEffect` is a bit confusing!', createdAt: '2023-10-26T10:00:00Z', likes: 12, replyToPostNumber: null, postNumber: 1 },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Best Practices for Tailwind CSS in Large Projects',
-    author: users[1],
-    category: categories[1],
-    createdAt: '2023-10-25T14:20:00Z',
-    lastPostedAt: '2023-10-27T09:15:00Z',
-    replyCount: 8,
-    viewCount: 230,
-    posts: [
-       { id: 6, author: users[1], content: 'How do you organize your Tailwind classes in a large-scale application? Using `@apply` in CSS files? Or utility classes directly in the HTML?', createdAt: '2023-10-25T14:20:00Z', likes: 25, replyToPostNumber: null, postNumber: 1 },
-    ]
-  },
-  {
-    id: 3,
-    title: 'Favorite TypeScript Utility Types?',
-    author: users[2],
-    category: categories[3],
-    createdAt: '2023-10-27T11:00:00Z',
-    lastPostedAt: '2023-10-27T11:00:00Z',
-    replyCount: 0,
-    viewCount: 45,
-    posts: [
-      { id: 11, author: users[2], content: 'What are some of your most-used utility types in TypeScript? I\'m a big fan of `Pick` and `Omit`.', createdAt: '2023-10-27T11:00:00Z', likes: 8, replyToPostNumber: null, postNumber: 1 },
-    ]
-  },
-    {
-    id: 4,
-    title: 'Weekend Plans Discussion',
-    author: users[3],
-    category: categories[2],
-    createdAt: '2023-10-24T18:00:00Z',
-    lastPostedAt: '2023-10-26T19:45:00Z',
-    replyCount: 12,
-    viewCount: 450,
-    posts: [
-       { id: 12, author: users[3], content: 'It\'s almost the weekend! Anyone have exciting plans?', createdAt: '2023-10-24T18:00:00Z', likes: 3, replyToPostNumber: null, postNumber: 1 },
-    ]
-  },
-   {
-    id: 5,
-    title: 'Custom Hooks for everything!',
-    author: users[0],
-    category: categories[0],
-    createdAt: '2023-10-28T09:00:00Z',
-    lastPostedAt: '2023-10-28T09:00:00Z',
-    replyCount: 0,
-    viewCount: 25,
-    posts: [
-      { id: 14, author: users[0], content: 'I\'ve started abstracting almost all my component logic into custom hooks. It\'s making my components so much cleaner!', createdAt: '2023-10-28T09:00:00Z', likes: 15, replyToPostNumber: null, postNumber: 1 },
-    ],
-  },
+let TOPICS: Topic[] = [
+  { id: 'topic-1', title: 'What are React Server Components?', author: USERS[0], category: CATEGORIES[0], createdAt: '2023-10-26T10:00:00Z', lastPostedAt: '2023-10-26T12:30:00Z', replyCount: 1, viewCount: 150 },
+  { id: 'topic-2', title: 'Best way to handle forms in 2024?', author: USERS[0], category: CATEGORIES[0], createdAt: '2023-10-25T14:00:00Z', lastPostedAt: '2023-10-25T18:45:00Z', replyCount: 1, viewCount: 250 },
+  { id: 'topic-3', title: 'Show off your latest Tailwind project!', author: USERS[1], category: CATEGORIES[1], createdAt: '2023-10-24T09:00:00Z', lastPostedAt: '2023-10-24T15:20:00Z', replyCount: 1, viewCount: 500 },
+  { id: 'topic-4', title: 'Is HTMX the future?', author: USERS[2], category: CATEGORIES[2], createdAt: '2023-10-26T11:00:00Z', lastPostedAt: '2023-10-26T11:00:00Z', replyCount: 0, viewCount: 80 },
 ];
 
-const posts: { [topicId: number]: Post[] } = {
-  1: [
-    { id: 1, author: users[0], content: 'Hey everyone, I\'m new to React Hooks. What are the best resources to get started? I\'ve read the official docs, but looking for more practical examples.\n\n`useEffect` is a bit confusing!', createdAt: '2023-10-26T10:00:00Z', likes: 12, replyToPostNumber: null, postNumber: 1 },
-    { id: 2, author: users[2], content: 'I highly recommend Kent C. Dodds\' blog. He has some amazing deep dives into hooks.', createdAt: '2023-10-26T10:15:00Z', likes: 8, replyToPostNumber: 1, postNumber: 2 },
-    { id: 3, author: users[1], content: 'For `useEffect`, the key is to understand the dependency array. An empty array `[]` means it runs only once on mount. If you pass variables, it re-runs when they change.', createdAt: '2023-10-26T11:00:00Z', likes: 15, replyToPostNumber: 1, postNumber: 3 },
-    { id: 4, author: users[0], content: '@ts_master Thanks for the tip! I\'ll check it out. @tailwind_fan That makes sense, I think I was missing that part.', createdAt: '2023-10-26T11:30:00Z', likes: 2, replyToPostNumber: 3, postNumber: 4 },
-    { id: 5, author: users[3], content: 'Don\'t forget custom hooks! They are a superpower for reusing logic.', createdAt: '2023-10-27T12:30:00Z', likes: 7, replyToPostNumber: 1, postNumber: 5 },
-  ],
-  2: [
-    { id: 6, author: users[1], content: 'How do you organize your Tailwind classes in a large-scale application? Using `@apply` in CSS files? Or utility classes directly in the HTML?', createdAt: '2023-10-25T14:20:00Z', likes: 25, replyToPostNumber: null, postNumber: 1 },
-    { id: 7, author: users[0], content: 'We stick to utility classes directly in JSX. It feels weird at first but becomes very productive. We use component libraries like Headless UI to encapsulate complex components.', createdAt: '2023-10-25T15:00:00Z', likes: 10, replyToPostNumber: 1, postNumber: 2 },
-    { id: 8, author: users[3], content: 'I agree. We found `@apply` can lead to the same issues as custom CSS, where you have to jump between files. Keeping styles co-located with the markup is a big win.', createdAt: '2023-10-25T16:00:00Z', likes: 12, replyToPostNumber: 1, postNumber: 3 },
-     { id: 9, author: users[2], content: 'There is a `prettier-plugin-tailwindcss` that automatically sorts your classes. It\'s a life-saver for keeping things clean!', createdAt: '2023-10-26T09:15:00Z', likes: 18, replyToPostNumber: 1, postNumber: 4 },
-  ],
-  3: [
-      { id: 11, author: users[2], content: 'What are some of your most-used utility types in TypeScript? I\'m a big fan of `Pick` and `Omit`.', createdAt: '2023-10-27T11:00:00Z', likes: 8, replyToPostNumber: null, postNumber: 1 },
-  ],
-  4: [
-       { id: 12, author: users[3], content: 'It\'s almost the weekend! Anyone have exciting plans?', createdAt: '2023-10-24T18:00:00Z', likes: 3, replyToPostNumber: null, postNumber: 1 },
-       { id: 13, author: users[0], content: 'Going for a hike on Saturday!', createdAt: '2023-10-25T09:00:00Z', likes: 5, replyToPostNumber: 1, postNumber: 2 },
-  ],
-  5: [
-      { id: 14, author: users[0], content: 'I\'ve started abstracting almost all my component logic into custom hooks. It\'s making my components so much cleaner!', createdAt: '2023-10-28T09:00:00Z', likes: 15, replyToPostNumber: null, postNumber: 1 },
-  ]
+let POSTS: Post[] = [
+  { id: 'post-1', topicId: 'topic-1', content: 'This is the first post about RSCs. They seem interesting but also complex.', author: USERS[0], createdAt: '2023-10-26T10:00:00Z', likes: 10, topicTitle: TOPICS[0].title },
+  { id: 'post-2', topicId: 'topic-1', content: 'I agree! The learning curve might be steep.', author: USERS[1], createdAt: '2023-10-26T12:30:00Z', likes: 5, topicTitle: TOPICS[0].title },
+  { id: 'post-3', topicId: 'topic-2', content: "I'm a big fan of React Hook Form combined with Zod for validation. It's a powerful combo.", author: USERS[0], createdAt: '2023-10-25T14:00:00Z', likes: 25, topicTitle: TOPICS[1].title },
+  { id: 'post-4', topicId: 'topic-2', content: "I've been using Formik for years and it's still great.", author: USERS[2], createdAt: '2023-10-25T18:45:00Z', likes: 8, topicTitle: TOPICS[1].title },
+  { id: 'post-5', topicId: 'topic-3', content: "Just launched my new portfolio site using Tailwind and Next.js! Check it out.", author: USERS[1], createdAt: '2023-10-24T09:00:00Z', likes: 50, topicTitle: TOPICS[2].title },
+  { id: 'post-6', topicId: 'topic-3', content: "Wow, that looks amazing! The animations are so smooth.", author: USERS[0], createdAt: '2023-10-24T15:20:00Z', likes: 12, topicTitle: TOPICS[2].title },
+];
+
+
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+export const fetchCategories = async (): Promise<Category[]> => {
+  await delay(300);
+  return [...CATEGORIES];
 };
 
-const simulateDelay = <T,>(data: T, delay = 500): Promise<T> =>
-  new Promise(resolve => setTimeout(() => resolve(data), delay));
-
-export const login = (username: string): Promise<User> => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
-            if (user) {
-                resolve(user);
-            } else {
-                reject(new Error('User not found'));
-            }
-        }, 500);
-    });
-};
-
-export const fetchCategories = (): Promise<Category[]> => {
-  return simulateDelay(categories);
-};
-
-export const fetchTopics = (categoryId?: number): Promise<Topic[]> => {
-  const sortedTopics = [...topics].sort((a, b) => new Date(b.lastPostedAt).getTime() - new Date(a.lastPostedAt).getTime());
-  if (categoryId) {
-    const filteredTopics = sortedTopics.filter(t => t.category.id === categoryId);
-    return simulateDelay(filteredTopics);
+export const fetchTopics = async (categoryId?: string): Promise<Topic[]> => {
+  await delay(500);
+  const topicsWithCounts = TOPICS.map(topic => ({
+    ...topic,
+    replyCount: POSTS.filter(p => p.topicId === topic.id).length - 1
+  })).sort((a, b) => new Date(b.lastPostedAt).getTime() - new Date(a.lastPostedAt).getTime());
+  if (!categoryId) {
+    return topicsWithCounts;
   }
-  return simulateDelay(sortedTopics);
+  return topicsWithCounts.filter(topic => topic.category.id === categoryId);
 };
 
-export const fetchTopicById = (topicId: number): Promise<Topic | undefined> => {
-  const topic = topics.find(t => t.id === topicId);
-  return simulateDelay(topic);
+export const fetchPosts = async (): Promise<Post[]> => {
+    await delay(200);
+    return [...POSTS];
+}
+
+export const fetchPostsForTopic = async (topicId: string): Promise<Post[]> => {
+  await delay(400);
+  return POSTS.filter(post => post.topicId === topicId).sort((a,b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 };
 
-export const fetchPostsForTopic = (topicId: number): Promise<Post[]> => {
-  return simulateDelay(posts[topicId] || []);
+export const fetchUserById = async (userId: string): Promise<User | undefined> => {
+  await delay(200);
+  return USERS.find(user => user.id === userId);
 };
 
-export const fetchUserById = (userId: string): Promise<User | undefined> => {
-    return simulateDelay(users.find(u => u.id === userId));
+export const fetchTopicsByUser = async (userId: string): Promise<Topic[]> => {
+  await delay(400);
+  return TOPICS.filter(topic => topic.author.id === userId).sort((a,b) => new Date(b.lastPostedAt).getTime() - new Date(a.lastPostedAt).getTime());
 };
 
-export const fetchTopicsByUser = (userId: string): Promise<Topic[]> => {
-    return simulateDelay(topics.filter(t => t.author.id === userId));
+export const fetchPostsByUser = async (userId: string): Promise<Post[]> => {
+  await delay(400);
+  return POSTS
+    .filter(post => post.author.id === userId)
+    .sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .map(p => ({...p, topicTitle: TOPICS.find(t => t.id === p.topicId)?.title}));
 };
 
-export const fetchPostsByUser = (userId: string): Promise<Post[]> => {
-    const userPosts: Post[] = [];
-    for (const topicId in posts) {
-        const topic = topics.find(t => t.id === parseInt(topicId));
-        if (topic) {
-            posts[topicId].forEach(post => {
-                if (post.author.id === userId) {
-                    userPosts.push({ ...post, topicTitle: topic.title, topicId: topic.id });
-                }
-            });
-        }
+export const createPost = async (topicId: string, content: string, author: User): Promise<Post> => {
+  await delay(600);
+  const topic = TOPICS.find(t => t.id === topicId);
+  if (!topic) throw new Error("Topic not found");
+  
+  const newPost: Post = {
+    id: `post-${Date.now()}`,
+    topicId,
+    content,
+    author,
+    createdAt: new Date().toISOString(),
+    likes: 0,
+    topicTitle: topic.title,
+  };
+  POSTS.push(newPost);
+  
+  // Update topic lastPostedAt
+  const topicIndex = TOPICS.findIndex(t => t.id === topicId);
+  if (topicIndex !== -1) {
+    TOPICS[topicIndex] = { ...TOPICS[topicIndex], lastPostedAt: newPost.createdAt };
+  }
+  
+  return newPost;
+};
+
+export const login = async (username: string): Promise<User> => {
+    await delay(500);
+    const user = USERS.find(u => u.username.toLowerCase() === username.toLowerCase());
+    if (user) {
+        return user;
     }
-    return simulateDelay(userPosts.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-};
-
-
-export const createPost = (topicId: number, content: string, author: User): Promise<Post> => {
-    const topic = topics.find(t => t.id === topicId);
-    
-    if (!topic || !author) {
-        return Promise.reject('Topic or author not found');
-    }
-
-    const topicPosts = posts[topicId] || [];
-    const newPost: Post = {
-        id: Math.random(), // In a real DB this would be auto-incrementing
-        author,
-        content,
-        createdAt: new Date().toISOString(),
-        likes: 0,
-        replyToPostNumber: null,
-        postNumber: topicPosts.length + 1,
-    };
-
-    if (!posts[topicId]) {
-      posts[topicId] = [];
-    }
-
-    posts[topicId].push(newPost);
-    topic.replyCount += 1;
-    topic.lastPostedAt = newPost.createdAt;
-
-    return simulateDelay(newPost);
-};
+    throw new Error('User not found');
+}
